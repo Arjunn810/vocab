@@ -108,6 +108,7 @@ function App() {
         if (data && data[0] && data[0].meanings && data[0].meanings[0]) {
           let definition = data[0].meanings[0].definitions[0].definition;
           setMeaning(definition);
+          setPronunciation(data[0].phonetic)
         }
       })
       .catch(error => console.error('Error fetching word meaning:', error));
