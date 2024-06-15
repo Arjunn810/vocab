@@ -22,7 +22,7 @@ function App() {
   };
 
   const handleMeaningChange = (e) => {
-    setMeaning(e.target.value);
+    setMeaning(e.target.value.split("\r\n"));
   };
 
   const handleUsageChange = (e) => {
@@ -100,18 +100,40 @@ function App() {
   };
 
   const fetchMeaning = () => {
+    if (!word) return;
+
     const url = `http://localhost:3100/${word}`;
     fetch(url)
       .then(response => response.json())
       .then(data => {
-        debugger
         if (data) {
-          setMeaning(data.definition[0]);
+          let meaning = data.definition.join("\r\n")
+          setMeaning(meaning);
           setPronunciation(data.pronunciation);
         }
       })
       .catch(error => console.error('Error fetching word meaning:', error));
   };
+
+  const formatMeaning = (meaning) => {
+    if (Array.isArray(meaning)) {
+      let str = meaning.map(w => `-  ${w} \r\n`).join("")
+      return str
+    } else {
+      let str = meaning.split("\r\n").map(w => `-  ${w} \r\n`).join("")
+      return str
+    }
+  }
+
+  const formatMeaningForDisplay = (meaning) => {
+    if (Array.isArray(meaning)) {
+      let str = meaning.map(w => <li>{w}</li>)
+      return str
+    } else {
+      let str = meaning.split("\r\n").map(w => <li>{w}</li>)
+      return str
+    }
+  }
 
   return (
     <div className="App">
@@ -149,7 +171,7 @@ function App() {
             className="form-control"
             rows="3"
             placeholder="Meaning"
-            value={meaning}
+            value={formatMeaning(meaning)}
             onChange={handleMeaningChange}
           />
         </div>
@@ -166,31 +188,36 @@ function App() {
           />
         </div>
 
-        <button className="btn" onClick={handleAddWord}>
-          {formMode === "EDIT" ? "Save" : "Add"}
-        </button>
+        <div className="form-group">
+          <button className="btn" onClick={handleAddWord}>
+            {formMode === "EDIT" ? "Save" : "Add"}
+          </button>
+        </div>
 
         <div className="form-group">
           <label htmlFor="txtSearch">Search Word</label>
-          <input
-            id="txtSearch"
-            className="form-control"
-            type="text"
-            placeholder="Search"
-            value={search}
-            onChange={handleSearchChange}
-          />
+          <div style={{ display: "flex", marginTop: "0px" }}>
+            <input
+              id="txtSearch"
+              className="form-control"
+              type="text"
+              placeholder="Search"
+              value={search}
+              onChange={handleSearchChange}
+            />
+            <button className="btn" onClick={handleSearch}>
+              Search
+            </button>
+          </div>
         </div>
 
-        <button className="btn" onClick={handleSearch}>
-          Search
-        </button>
+
 
         {filteredWords.map((word, idx) => (
           <div className="vocab-word" key={word.id}>
-            <p className="word lead mb-4">
+            <p className="word">
               {idx + 1}. {word.word} (
-              <span className="pronunciation lead mb-4">{word.pronunciation}</span>
+              <span className="pronunciation">{word.pronunciation}</span>
               )
               <button
                 className="btn btn-light btn-sm"
@@ -232,8 +259,10 @@ function App() {
                 </svg>
               </button>
             </p>
-            <p className="meaning lead mb-4">{word.meaning}</p>
-            <p className="usage lead mb-4">
+            <p className="meaning">{formatMeaningForDisplay(word.meaning)}</p>
+
+            <p className="usage">Usage</p>
+            <p className="usage">
               {word.usage.map((sentence, i) => (
                 <li key={i}>{sentence}</li>
               ))}
