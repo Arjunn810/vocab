@@ -1,71 +1,97 @@
-body{
+body {
   font-family: Arial, Helvetica, sans-serif;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+  margin: 50px;
+  background-color: #f0f0f0; /* Your desired background color */
 }
+
 .App {
-  
-}
-
-.word{
-  font-weight: 600;
-  line-height: 10px;
-  text-transform: capitalize;
-}
-
-.pronunciation{
-  font-weight: 400;
-  line-height: 10px;
-  font-style: italic;
-}
-
-.meaning{
-  font-weight: 400;
-  font-style: italic;
-  line-height: 8px;
-  padding-left: 18px;
-}
-
-.usage{
-  font-weight: 400;
-  padding-left: 18px;
-  line-height: 25px;
-}
-
-.vocab-word{
-  margin-top: 25px;
-}
-
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  width: 100%;
+  max-width: 600px;
+  padding: 2rem;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  margin: auto;
 }
 
-.App-link {
-  color: #61dafb;
+.form-group {
+  width: 100%;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.form-control {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin: auto;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}
+
+.btn-light {
+  background-color: #f8f9fa;
+  color: #000;
+}
+
+.btn-light:hover {
+  background-color: #e2e6ea;
+}
+
+.word {
+  font-weight: 600;
+  line-height: 10px;
+  text-transform: capitalize;
+  margin: auto;
+}
+
+.pronunciation {
+  font-weight: 400;
+  line-height: 10px;
+  font-style: italic;
+  margin: auto;
+}
+
+.meaning {
+  font-weight: 400;
+  font-style: italic;
+  line-height: 21px;
+  padding-left: 18px;
+  margin: auto;
+}
+
+.usage {
+  font-weight: 400;
+  padding-left: 18px;
+  line-height: 25px;
+  margin: auto;
+}
+
+.vocab-word {
+  margin-top: 25px;
+  margin: auto;
 }
