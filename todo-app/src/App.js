@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import { Word, WordList } from "./models";
 
@@ -12,6 +12,10 @@ function App() {
   const [editId, setEditId] = useState(null);
   const [search, setSearch] = useState("");
   const [filteredWords, setFilteredWords] = useState(wordList.getWords());
+
+  useEffect(()=>{
+    fetchAllVocab();
+  }, [])
 
   const handleWordChange = (e) => {
     setWord(e.target.value);
@@ -86,12 +90,6 @@ function App() {
     }
   };
 
-  const deleteWord = (id) => {
-    wordList.deleteWord(id);
-    setWordList(new WordList(wordList.getWords()));
-    setFilteredWords(wordList.getWords());
-  };
-
   const searchByWord = (str) => {
     if (!wordList) return [];
 
@@ -111,6 +109,24 @@ function App() {
           let meaning = data.definition.join("\r\n")
           setMeaning(meaning);
           setPronunciation(data.pronunciation);
+        }
+      })
+      .catch(error => console.error('Error fetching word meaning:', error));
+  };
+
+  const fetchAllVocab = () => {
+
+    const url = `http://localhost:3100/all/`;
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        if (data) {
+          debugger
+          const words = data || [];
+          
+          const newWordList = new WordList(words);
+          setWordList(newWordList);
+          setFilteredWords(newWordList.getWords())
         }
       })
       .catch(error => console.error('Error fetching word meaning:', error));
@@ -136,6 +152,31 @@ function App() {
       .then((result) => console.log(result))
       .catch((error) => console.error(error));
   };
+
+  const deleteWord = (id) => {
+    // wordList.deleteWord(id);
+    // setWordList(new WordList(wordList.getWords()));
+    // setFilteredWords(wordList.getWords());
+    console.log ("Delete Word: ", id);
+    deleteMeaningFromDB(id);
+  };
+
+const deleteMeaningFromDB = (id) => {
+  if (!id) return;
+
+  const requestOptions = {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+  };
+
+  fetch(`http://localhost:3100/word/${id}`, requestOptions)
+    .then((response) => response.json())
+    .then((result) => {
+      fetchAllVocab();
+      console.log(result)
+    })
+    .catch((error) => console.error('Error deleting word:', error));
+};
 
   const formatMeaning = (meaning) => {
     if (Array.isArray(meaning)) {
@@ -193,7 +234,7 @@ function App() {
             className="form-control"
             rows="3"
             placeholder="Meaning"
-            value={formatMeaning(meaning)}
+            value={meaning}
             onChange={handleMeaningChange}
           />
         </div>
