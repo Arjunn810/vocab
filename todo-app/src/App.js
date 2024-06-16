@@ -47,7 +47,7 @@ function App() {
 
   const saveEditedWord = () => {
     if (word && meaning && editId !== null) {
-      const updatedWord = new Word(word, pronunciation, meaning, [usage]);
+      const updatedWord = new Word(word, pronunciation, meaning, [usage || "-"]);
       wordList.editWord(editId, updatedWord);
       setWordList(new WordList(wordList.getWords()));
       resetForm();
@@ -55,10 +55,11 @@ function App() {
   };
 
   const saveWord = () => {
-    if (word && pronunciation && meaning && usage) {
+    if (word && pronunciation && meaning) {
       const newWord = new Word(word, pronunciation, meaning, [usage]);
       wordList.addWord(newWord);
       setWordList(new WordList(wordList.getWords()));
+      saveMeaningToDB(newWord);
       resetForm();
     }
   };
@@ -102,7 +103,7 @@ function App() {
   const fetchMeaning = () => {
     if (!word) return;
 
-    const url = `http://localhost:3100/${word}`;
+    const url = `http://localhost:3100/vocab/${word}`;
     fetch(url)
       .then(response => response.json())
       .then(data => {
@@ -113,6 +114,27 @@ function App() {
         }
       })
       .catch(error => console.error('Error fetching word meaning:', error));
+  };
+
+  const saveMeaningToDB = (word) => {
+    if (!word) return;
+
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    const content = JSON.stringify(word);
+
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: content,
+      redirect: "follow"
+    };
+
+    fetch("http://localhost:3100/word/", requestOptions)
+      .then((response) => response.text())
+      .then((result) => console.log(result))
+      .catch((error) => console.error(error));
   };
 
   const formatMeaning = (meaning) => {
