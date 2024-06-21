@@ -13,7 +13,7 @@ function App() {
   const [search, setSearch] = useState("");
   const [filteredWords, setFilteredWords] = useState(wordList.getWords());
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchAllVocab();
   }, [])
 
@@ -52,8 +52,10 @@ function App() {
   const saveEditedWord = () => {
     if (word && meaning && editId !== null) {
       const updatedWord = new Word(word, pronunciation, meaning, [usage || "-"]);
+      updatedWord.id = editId;
       wordList.editWord(editId, updatedWord);
       setWordList(new WordList(wordList.getWords()));
+      updateWordToDB(updatedWord);
       resetForm();
     }
   };
@@ -123,7 +125,7 @@ function App() {
         if (data) {
           debugger
           const words = data || [];
-          
+
           const newWordList = new WordList(words);
           setWordList(newWordList);
           setFilteredWords(newWordList.getWords())
@@ -153,30 +155,46 @@ function App() {
       .catch((error) => console.error(error));
   };
 
+  const updateWordToDB = (word) => {
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    const content = JSON.stringify(word);
+
+    const requestOptions = {
+      method: "PUT",
+      headers: myHeaders,
+      body: content
+    };
+
+    fetch("http://localhost:3100/word/", requestOptions)
+      .then((response) => response.text())
+      .then((result) => console.log(result))
+      .catch((error) => console.error(error));
+  };
+
+
   const deleteWord = (id) => {
-    // wordList.deleteWord(id);
-    // setWordList(new WordList(wordList.getWords()));
-    // setFilteredWords(wordList.getWords());
-    console.log ("Delete Word: ", id);
+    console.log("Delete Word: ", id);
     deleteMeaningFromDB(id);
   };
 
-const deleteMeaningFromDB = (id) => {
-  if (!id) return;
+  const deleteMeaningFromDB = (id) => {
+    if (!id) return;
 
-  const requestOptions = {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
+    const requestOptions = {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+    };
+
+    fetch(`http://localhost:3100/word/${id}`, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        fetchAllVocab();
+        console.log(result)
+      })
+      .catch((error) => console.error('Error deleting word:', error));
   };
-
-  fetch(`http://localhost:3100/word/${id}`, requestOptions)
-    .then((response) => response.json())
-    .then((result) => {
-      fetchAllVocab();
-      console.log(result)
-    })
-    .catch((error) => console.error('Error deleting word:', error));
-};
 
   const formatMeaning = (meaning) => {
     if (Array.isArray(meaning)) {
